@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,40 +16,34 @@ export class UserService {
 
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(payload: UserRequestDto): Promise<User> {
+  async createUser(payload: UserRequestDto): Promise<void> {
     this.logger.log('Creatting user');
 
     try {
       const { email, password, name } = payload;
 
-      const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(password, salt);
-      const user = this.usersRepository.create({
-        email,
-        password: hashedPassword,
-        name,
-      });
+      const userFound = await this.findUserByEmail(email, false);
 
-      const newUser = await this.usersRepository.save(user);
-
-      delete newUser.password;
-
-      return newUser;
+      if (!userFound) {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
+        await this.createNewUser(email, name, hashedPassword);
+      }
     } catch (error) {
       this.logger.error(`Error creatting user: ${error}`);
       throw error;
     }
   }
 
-  async findUserByEmail(
+  private async findUserByEmail(
     email: string,
     selectSecrets: boolean = false,
-  ): Promise<User | undefined> {
-    return this.usersRepository.findOne({
-      where: { email },
+  ): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
       select: {
         id: true,
         email: true,
@@ -54,5 +52,32 @@ export class UserService {
         password: selectSecrets,
       },
     });
+
+    if (user) {
+      throw new UnprocessableEntityException(
+        'O endereço de e-mail informado já está em uso. Por favor, tente outroGuest user not found',
+      );
+    }
+
+    return false;
+  }
+
+  private async createNewUser(
+    email: string,
+    name: string,
+    password: string,
+  ): Promise<void> {
+    try {
+      const user = this.userRepository.create({
+        email,
+        name,
+        password,
+      });
+
+      await this.userRepository.save(user);
+    } catch (error) {
+      this.logger.error(`Error user was not created: ${error}`);
+      throw error;
+    }
   }
 }

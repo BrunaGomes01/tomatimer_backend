@@ -13,7 +13,7 @@ import {
 import { UserRequestDto } from '../../user/dto/user-request.dto';
 import { UserService } from '../../user/service/user.service';
 import { AuthService } from '../service/auth.service';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginRequestDto } from '../dto/login-request.dto';
 import { LoginReponseDto } from '../dto/login-response.dto';
 import { RefreshTokenRequestDto } from '../dto/refresh-token-request.dto';
@@ -24,6 +24,7 @@ import { ResetTokenRequestDto } from '../dto/reset-token-request.dto';
 import { ForgotPasswordResponseDto } from '../dto/forgot-password-response.dto';
 
 @Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(
     private authService: AuthService,

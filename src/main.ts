@@ -29,7 +29,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(configService.get('PORT'));
+  await app.listen(configService.get('PORT') || 3000);
   console.log(`App running at: http://localhost:${configService.get('PORT')}/`);
 }
 bootstrap();

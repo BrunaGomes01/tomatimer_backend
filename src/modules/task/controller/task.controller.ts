@@ -96,7 +96,6 @@ export class TaskController {
     description: 'Returns all tasks by user',
     type: [TaskResponseDto],
   })
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Get()
   async findAllTasksByUser(
     @GuestUserToken() token: string,
@@ -117,7 +116,6 @@ export class TaskController {
     description: 'Returns a task',
     type: TaskResponseDto,
   })
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Get(':id')
   async findOneTask(
     @GuestUserToken() token: string,

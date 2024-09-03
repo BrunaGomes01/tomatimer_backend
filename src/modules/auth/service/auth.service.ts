@@ -19,7 +19,6 @@ import { RefreshTokenRequestDto } from '../dto/refresh-token-request.dto';
 import { RefreshTokenReponseDto } from '../dto/refresh-token-response.dto';
 
 import { ResetToken } from '../entities/reset-token.entity';
-import { MailService } from './mail.service';
 import { nanoid } from 'nanoid';
 import { ForgotPasswordResponseDto } from '../dto/forgot-password-response.dto';
 import { ResetTokenReponseDto } from '../dto/reset-token-response.dto';
@@ -30,7 +29,6 @@ export class AuthService {
 
   constructor(
     private jwtService: JwtService,
-    private mailService: MailService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(RefreshToken)

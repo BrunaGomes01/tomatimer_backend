@@ -9,11 +9,16 @@ import {
   Put,
   Req,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
-import { UserRequestDto } from '../../user/dto/user-request.dto';
-import { UserService } from '../../user/service/user.service';
 import { AuthService } from '../service/auth.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LoginRequestDto } from '../dto/login-request.dto';
 import { LoginReponseDto } from '../dto/login-response.dto';
 import { RefreshTokenRequestDto } from '../dto/refresh-token-request.dto';
@@ -22,6 +27,8 @@ import { ChangePasswordRequestDto } from '../dto/change-password-request.dot';
 import { ForgotPasswordRequestDto } from '../dto/forgot-password-request.dto';
 import { ResetTokenRequestDto } from '../dto/reset-token-request.dto';
 import { ForgotPasswordResponseDto } from '../dto/forgot-password-response.dto';
+import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
+import { UserService } from 'src/modules/user/service/user.service';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -43,20 +50,6 @@ export class AuthController {
   @Post('login')
   async loginUser(@Body() request: LoginRequestDto): Promise<LoginReponseDto> {
     return await this.authService.loginUser(request);
-  }
-
-  @ApiOperation({
-    description: 'Create new user',
-  })
-  @ApiBody({ type: UserRequestDto })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'The user was created',
-  })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('register')
-  async createUser(@Body() request: UserRequestDto): Promise<void> {
-    return await this.userService.createUser(request);
   }
 
   @ApiOperation({
@@ -138,5 +131,27 @@ export class AuthController {
       resetTokenRequestDto.newPassword,
       resetTokenRequestDto.resetToken,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    description: 'Get user',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the token user',
+    type: UserResponseDto,
+  })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'token user',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Get('user')
+  getProfile(
+    @Headers('authorization') tokenUser: string,
+    @Req() request,
+  ): Promise<UserResponseDto> {
+    return this.userService.getUser(request.userId);
   }
 }

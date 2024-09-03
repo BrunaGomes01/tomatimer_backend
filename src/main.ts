@@ -20,7 +20,16 @@ async function bootstrap() {
   const builder = new DocumentBuilder()
     .setTitle('Tomatimer Service')
     .setDescription('Repository: tomatimer_backend')
-    .setVersion('1.0');
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        description: 'Smart Lock Token',
+        type: 'apiKey',
+        in: 'header',
+        name: 'authorization',
+      },
+      'SmartLockToken',
+    );
 
   const config = builder.build();
   const document = SwaggerModule.createDocument(app, config, {

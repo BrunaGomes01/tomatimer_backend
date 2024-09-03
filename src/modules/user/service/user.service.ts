@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 
 import { UserRequestDto } from '../dto/user-request.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -77,6 +78,30 @@ export class UserService {
       await this.userRepository.save(user);
     } catch (error) {
       this.logger.error(`Error user was not created: ${error}`);
+      throw error;
+    }
+  }
+
+  async getUser(userId: string): Promise<UserResponseDto> {
+    try {
+      console.log('USERID', userId);
+      const user = await this.userRepository.findOne({
+        where: { id: Number(userId) },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          isActive: true,
+        },
+      });
+
+      if (user) {
+        throw new UnprocessableEntityException('Usuário não encontrado.');
+      }
+
+      return user;
+    } catch (error) {
+      this.logger.error(`Error user was not found: ${error}`);
       throw error;
     }
   }

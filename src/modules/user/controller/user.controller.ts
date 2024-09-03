@@ -1,7 +1,16 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRequestDto } from '../dto/user-request.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { GuestUserToken } from '../../../core/decorators/guest-access-token.decorator';
 
 @Controller('user')
 @ApiTags('Users')
@@ -20,5 +29,19 @@ export class UserController {
   @Post('register')
   async createUser(@Body() request: UserRequestDto): Promise<void> {
     return await this.userService.createUser(request);
+  }
+
+  @ApiOperation({
+    description: 'Get user',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the token user',
+    type: UserResponseDto,
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Get()
+  getProfile(@GuestUserToken() token: string): Promise<UserResponseDto> {
+    return this.userService.getUser(token);
   }
 }

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -19,7 +18,6 @@ import { ChangePasswordRequestDto } from '../dto/change-password-request.dot';
 import { ForgotPasswordRequestDto } from '../dto/forgot-password-request.dto';
 import { ResetTokenRequestDto } from '../dto/reset-token-request.dto';
 import { ForgotPasswordResponseDto } from '../dto/forgot-password-response.dto';
-import { UserResponseDto } from '../../user/dto/user-response.dto';
 import { UserService } from '../../user/service/user.service';
 import { GuestUserToken } from '../../../core/decorators/guest-access-token.decorator';
 
@@ -115,23 +113,5 @@ export class AuthController {
       resetTokenRequestDto.newPassword,
       resetTokenRequestDto.resetToken,
     );
-  }
-
-  @UseGuards(AuthGuard)
-  @ApiOperation({
-    description: 'Get user',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Returns the token user',
-    type: UserResponseDto,
-  })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Get('user')
-  getProfile(
-    @GuestUserToken() token: string,
-    @Req() request,
-  ): Promise<UserResponseDto> {
-    return this.userService.getUser(request.userId);
   }
 }

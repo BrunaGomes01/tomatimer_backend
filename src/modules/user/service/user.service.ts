@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
@@ -10,6 +11,8 @@ import { User } from '../entities/user.entity';
 
 import { UserRequestDto } from '../dto/user-request.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { RefreshTokenReponseDto } from 'src/modules/auth/dto/refresh-token-response.dto';
+import { RefreshToken } from '../../auth/entities/refresh-token.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +21,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
   async createUser(payload: UserRequestDto): Promise<void> {
@@ -82,27 +87,44 @@ export class UserService {
     }
   }
 
-  async getUser(userId: string): Promise<UserResponseDto> {
+  async getUser(token: string): Promise<UserResponseDto> {
     try {
-      console.log('USERID', userId);
-      const user = await this.userRepository.findOne({
-        where: { id: Number(userId) },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          isActive: true,
-        },
-      });
+      const tokenFound = await this.findUserIdByToken(token);
 
-      if (user) {
-        throw new UnprocessableEntityException('Usuário não encontrado.');
+      if (tokenFound) {
+        const user = await this.userRepository.findOne({
+          where: { id: Number(tokenFound.userId) },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            isActive: true,
+          },
+        });
+        if (!user) {
+          throw new UnprocessableEntityException('Usuário não encontrado.');
+        }
+
+        return user;
       }
-
-      return user;
     } catch (error) {
       this.logger.error(`Error user was not found: ${error}`);
       throw error;
     }
+  }
+
+  private async findUserIdByToken(
+    token: string,
+  ): Promise<RefreshTokenReponseDto> {
+    const response: RefreshTokenReponseDto =
+      await this.refreshTokenRepository.findOne({
+        where: { token: token },
+      });
+
+    if (!response) {
+      throw new NotFoundException('Token não encontrado');
+    }
+
+    return response;
   }
 }

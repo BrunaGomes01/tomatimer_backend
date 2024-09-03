@@ -105,6 +105,8 @@ export class UserService {
           throw new UnprocessableEntityException('Usuário não encontrado.');
         }
 
+        console.log('USER', user);
+
         return user;
       }
     } catch (error) {

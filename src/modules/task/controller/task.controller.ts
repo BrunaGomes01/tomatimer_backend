@@ -108,9 +108,9 @@ export class TaskController {
     description: 'Returns a task',
   })
   @ApiParam({
-    name: 'userId',
+    name: 'taskId',
     required: true,
-    description: 'User id',
+    description: 'Task id',
   })
   @ApiResponse({
     status: HttpStatus.OK,

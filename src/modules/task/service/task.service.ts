@@ -8,8 +8,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from '../entities/task.entity';
 import { TaskRequestDto } from '../dto/task-request.dto';
-import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
-import { User } from 'src/modules/user/entities/user.entity';
+import { UserResponseDto } from '../../user/dto/user-response.dto';
+import { User } from '../../user/entities/user.entity';
 import { TaskUpdateRequestDto } from '../dto/task-request.dto copy';
 import { TaskResponseDto } from '../dto/task-response.dto';
 

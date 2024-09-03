@@ -27,8 +27,8 @@ import { ChangePasswordRequestDto } from '../dto/change-password-request.dot';
 import { ForgotPasswordRequestDto } from '../dto/forgot-password-request.dto';
 import { ResetTokenRequestDto } from '../dto/reset-token-request.dto';
 import { ForgotPasswordResponseDto } from '../dto/forgot-password-response.dto';
-import { UserResponseDto } from 'src/modules/user/dto/user-response.dto';
-import { UserService } from 'src/modules/user/service/user.service';
+import { UserResponseDto } from '../../user/dto/user-response.dto';
+import { UserService } from '../../user/service/user.service';
 
 @Controller('auth')
 @ApiTags('Authentication')

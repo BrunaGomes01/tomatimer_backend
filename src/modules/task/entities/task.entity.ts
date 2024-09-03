@@ -16,7 +16,7 @@ export class Task {
   id: number;
 
   @IsNotEmpty()
-  @Column({ unique: true, nullable: false, type: 'varchar', name: 'userId' })
+  @Column({ nullable: false, type: 'varchar', name: 'userId' })
   userId: number;
 
   @IsNotEmpty()

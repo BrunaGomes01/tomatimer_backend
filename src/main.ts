@@ -30,7 +30,8 @@ async function bootstrap() {
         name: 'authorization',
       },
       'SmartLockToken',
-    );
+    )
+    .addServer('https://tomatimer-backend.vercel.app/');
 
   const config = builder.build();
   const document = SwaggerModule.createDocument(app, config, {

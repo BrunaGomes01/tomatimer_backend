@@ -97,7 +97,7 @@ export class TaskController {
     type: [TaskResponseDto],
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Get(':userId')
+  @Get()
   async findAllTasksByUser(
     @GuestUserToken() token: string,
   ): Promise<TaskResponseDto[]> {

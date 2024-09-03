@@ -40,9 +40,8 @@ export class UserController {
     description: 'Returns the token user',
     type: UserResponseDto,
   })
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Get()
-  async getProfile(@GuestUserToken() token: string): Promise<UserRequestDto> {
+  async getProfile(@GuestUserToken() token: string): Promise<UserResponseDto> {
     return await this.userService.getUser(token);
   }
 }

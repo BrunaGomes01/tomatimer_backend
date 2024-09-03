@@ -24,7 +24,7 @@ import { TaskModule } from './modules/task/task.module';
         database: configService.get('DB_NAME'),
         entities: [join(process.cwd(), 'dist/**/*.entity.js')],
         // do NOT use synchronize: true in real projects
-        synchronize: true,
+        //synchronize: true,
       }),
     }),
     JwtModule.registerAsync({

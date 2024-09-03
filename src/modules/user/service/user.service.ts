@@ -99,6 +99,8 @@ export class UserService {
             email: true,
             name: true,
             isActive: true,
+            createdAt: true,
+            updatedAt: true,
           },
         });
         if (!user) {
@@ -107,7 +109,7 @@ export class UserService {
 
         console.log('USER', user);
 
-        return user;
+        return user as UserResponseDto;
       }
     } catch (error) {
       this.logger.error(`Error user was not found: ${error}`);

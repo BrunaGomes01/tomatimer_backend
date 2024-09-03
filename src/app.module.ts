@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -22,7 +21,6 @@ import { TaskModule } from './modules/task/task.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        //entities: [join(process.cwd(), 'dist/**/*.entity.{js,ts}')],
         entities: [__dirname + '/../**/*.entity.{js,ts}'],
         ssl: true,
         synchronize: true,

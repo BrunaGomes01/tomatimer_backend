@@ -14,14 +14,4 @@ export class TaskRequestDto {
     message: 'O nome inserido não é válido. Utilize apenas letras e espaços.',
   })
   name: string;
-
-  @ApiProperty({
-    description: 'The userId.',
-    type: Number,
-    example: 1,
-  })
-  @IsNotEmpty({
-    message: 'Por favor, passe o userid. Este campo é obrigatório.',
-  })
-  userId: number;
 }

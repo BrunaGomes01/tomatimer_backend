@@ -12,6 +12,8 @@ import { UserResponseDto } from '../../user/dto/user-response.dto';
 import { User } from '../../user/entities/user.entity';
 import { TaskUpdateRequestDto } from '../dto/task-request.dto copy';
 import { TaskResponseDto } from '../dto/task-response.dto';
+import { RefreshTokenReponseDto } from '../../auth/dto/refresh-token-response.dto';
+import { RefreshToken } from '../../auth/entities/refresh-token.entity';
 
 @Injectable()
 export class TaskService {
@@ -22,18 +24,20 @@ export class TaskService {
     private readonly taskRepository: Repository<Task>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  async createTask(payload: TaskRequestDto): Promise<void> {
+  async createTask(payload: TaskRequestDto, token: string): Promise<void> {
     this.logger.log('Creatting task');
 
     try {
-      const { name, userId } = payload;
+      const { name } = payload;
 
-      const userFound = await this.findUserById(userId, false);
+      const userFound = await this.getUser(token);
 
       if (userFound) {
-        await this.createNewTask(name, userId);
+        await this.createNewTask(name, userFound.id);
       }
     } catch (error) {
       this.logger.error(`Error creatting task: ${error}`);
@@ -79,16 +83,16 @@ export class TaskService {
     }
   }
 
-  async findAllTasksByUser(userId: string): Promise<TaskResponseDto[]> {
+  async findAllTasksByUser(token: string): Promise<TaskResponseDto[]> {
     this.logger.log('Getting all tasks by user');
 
     try {
-      const userFound = await this.findUserById(Number(userId));
+      const userFound = await this.getUser(token);
 
       if (userFound) {
         const taksByUser: TaskResponseDto[] = await this.taskRepository.find({
           where: {
-            userId: Number(userId),
+            userId: Number(userFound.id),
           },
         });
 
@@ -150,30 +154,6 @@ export class TaskService {
     }
   }
 
-  async getUser(userId: string): Promise<UserResponseDto> {
-    try {
-      console.log('USERID', userId);
-      const user = await this.userRepository.findOne({
-        where: { id: Number(userId) },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          isActive: true,
-        },
-      });
-
-      if (user) {
-        throw new UnprocessableEntityException('Usuário não encontrado.');
-      }
-
-      return user;
-    } catch (error) {
-      this.logger.error(`Error user was not found: ${error}`);
-      throw error;
-    }
-  }
-
   private async findUserById(
     userId: number,
     selectSecrets: boolean = false,
@@ -205,5 +185,48 @@ export class TaskService {
     }
 
     return task;
+  }
+
+  private async getUser(token: string): Promise<UserResponseDto> {
+    try {
+      const tokenFound = await this.findUserIdByToken(token);
+
+      if (tokenFound) {
+        const user = await this.userRepository.findOne({
+          where: { id: Number(tokenFound.userId) },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+        if (!user) {
+          throw new UnprocessableEntityException('Usuário não encontrado.');
+        }
+
+        return user as UserResponseDto;
+      }
+    } catch (error) {
+      this.logger.error(`Error user was not found: ${error}`);
+      throw error;
+    }
+  }
+
+  private async findUserIdByToken(
+    token: string,
+  ): Promise<RefreshTokenReponseDto> {
+    const response: RefreshTokenReponseDto =
+      await this.refreshTokenRepository.findOne({
+        where: { token: token },
+      });
+
+    if (!response) {
+      throw new NotFoundException('Token não encontrado');
+    }
+
+    return response;
   }
 }

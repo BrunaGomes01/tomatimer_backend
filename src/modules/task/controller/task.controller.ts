@@ -41,7 +41,7 @@ export class TaskController {
     @GuestUserToken() token: string,
     @Body() request: TaskRequestDto,
   ): Promise<void> {
-    return await this.taskService.createTask(request);
+    return await this.taskService.createTask(request, token);
   }
 
   @ApiOperation({
@@ -91,11 +91,6 @@ export class TaskController {
   @ApiOperation({
     description: 'Returns all tasks by user',
   })
-  @ApiParam({
-    name: 'userId',
-    required: true,
-    description: 'User id',
-  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns all tasks by user',
@@ -105,9 +100,8 @@ export class TaskController {
   @Get(':userId')
   async findAllTasksByUser(
     @GuestUserToken() token: string,
-    @Param('userId') userId: string,
   ): Promise<TaskResponseDto[]> {
-    return await this.taskService.findAllTasksByUser(userId);
+    return await this.taskService.findAllTasksByUser(token);
   }
 
   @ApiOperation({

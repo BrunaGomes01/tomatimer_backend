@@ -8,11 +8,9 @@ import {
   Param,
   Patch,
   Post,
-  Headers,
 } from '@nestjs/common';
 import {
   ApiBody,
-  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -22,6 +20,7 @@ import { TaskRequestDto } from '../dto/task-request.dto';
 import { TaskUpdateRequestDto } from '../dto/task-request.dto copy';
 import { TaskResponseDto } from '../dto/task-response.dto';
 import { TaskService } from '../service/task.service';
+import { GuestUserToken } from '../../../core/decorators/guest-access-token.decorator';
 
 @Controller('task')
 @ApiTags('Tasks')
@@ -36,14 +35,10 @@ export class TaskController {
     status: HttpStatus.NO_CONTENT,
     description: 'The task was created',
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post()
   async createTask(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Body() request: TaskRequestDto,
   ): Promise<void> {
     return await this.taskService.createTask(request);
@@ -57,10 +52,6 @@ export class TaskController {
     required: true,
     description: 'Task id',
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'The task was deleted',
@@ -68,7 +59,7 @@ export class TaskController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async deleteTask(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Param('id') id: string,
   ): Promise<void> {
     await this.taskService.deleteTask(id);
@@ -86,15 +77,11 @@ export class TaskController {
     status: HttpStatus.NO_CONTENT,
     description: 'The task was updated',
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @ApiBody({ type: TaskUpdateRequestDto })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
   async updateTask(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Param('id') id: string,
     @Body() request: TaskUpdateRequestDto,
   ): Promise<void> {
@@ -109,10 +96,6 @@ export class TaskController {
     required: true,
     description: 'User id',
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns all tasks by user',
@@ -121,7 +104,7 @@ export class TaskController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Get(':userId')
   async findAllTasksByUser(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Param('userId') userId: string,
   ): Promise<TaskResponseDto[]> {
     return await this.taskService.findAllTasksByUser(userId);
@@ -140,14 +123,10 @@ export class TaskController {
     description: 'Returns a task',
     type: TaskResponseDto,
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Get(':id')
   async findOneTask(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Param('id') id: string,
   ): Promise<TaskResponseDto> {
     return await this.taskService.findOneTask(id);
@@ -161,10 +140,6 @@ export class TaskController {
     required: true,
     description: 'Task id',
   })
-  @ApiHeader({
-    name: 'token',
-    description: 'Token user',
-  })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'The task was completed',
@@ -173,7 +148,7 @@ export class TaskController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
   async completeTask(
-    @Headers('token') token: string,
+    @GuestUserToken() token: string,
     @Param('id') id: string,
   ): Promise<void> {
     await this.taskService.completeTask(id);

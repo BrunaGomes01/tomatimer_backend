@@ -6,15 +6,10 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ValidationPipe } from '@nestjs/common';
 import { TaskModule } from './modules/task/task.module';
-import swaggerUI from 'swagger-ui-express';
-import swaggerJsDoc from 'swagger-jsdoc';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
-  const CSS_URL =
-    'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css';
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -36,7 +31,6 @@ async function bootstrap() {
       },
       'SmartLockToken',
     );
-  //.addServer('https://tomatimer-backend.vercel.app/');
 
   const config = builder.build();
   const document = SwaggerModule.createDocument(app, config, {

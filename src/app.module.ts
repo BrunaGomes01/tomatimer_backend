@@ -23,7 +23,7 @@ import { TaskModule } from './modules/task/task.module';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [join(process.cwd(), 'dist/**/*.entity.js')],
-        // do NOT use synchronize: true in real projects
+        ssl: true,
         //synchronize: true,
       }),
     }),

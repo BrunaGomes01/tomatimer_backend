@@ -11,7 +11,7 @@ import { User } from '../entities/user.entity';
 
 import { UserRequestDto } from '../dto/user-request.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
-import { RefreshTokenReponseDto } from 'src/modules/auth/dto/refresh-token-response.dto';
+import { RefreshTokenReponseDto } from '../../auth/dto/refresh-token-response.dto';
 import { RefreshToken } from '../../auth/entities/refresh-token.entity';
 
 @Injectable()

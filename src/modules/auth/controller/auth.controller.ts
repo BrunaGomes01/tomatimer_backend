@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Put,
   Req,
@@ -55,6 +54,10 @@ export class AuthController {
   @ApiOperation({
     description: 'Refresh token user',
   })
+  @ApiHeader({
+    name: 'token',
+    description: 'Token user',
+  })
   @ApiBody({ type: RefreshTokenRequestDto })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -62,27 +65,19 @@ export class AuthController {
     type: String,
   })
   @Post('refresh')
-  async refreshToken(@Body() request: RefreshTokenRequestDto): Promise<string> {
+  async refreshToken(
+    @Headers('token') token: string,
+    @Body() request: RefreshTokenRequestDto,
+  ): Promise<string> {
     return await this.authService.refreshToken(request);
-  }
-
-  @ApiOperation({
-    description: 'Returns the token user',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Returns the token user',
-    type: LoginReponseDto,
-  })
-  @Get('token/:userId')
-  async getTokenUser(
-    @Param('userId') userId: number,
-  ): Promise<LoginReponseDto> {
-    return await this.authService.generateUserTokens(userId);
   }
 
   @UseGuards(AuthGuard)
   @ApiOperation({ description: 'Change password' })
+  @ApiHeader({
+    name: 'token',
+    description: 'Token user',
+  })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'The change password',
@@ -90,6 +85,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('change-password')
   async changePassword(
+    @Headers('token') token: string,
     @Body() changePasswordDto: ChangePasswordRequestDto,
     @Req() req,
   ): Promise<void> {
@@ -103,6 +99,10 @@ export class AuthController {
   @ApiOperation({
     description: 'Forgot password',
   })
+  @ApiHeader({
+    name: 'token',
+    description: 'Token user',
+  })
   @ApiBody({ type: ForgotPasswordRequestDto })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -111,6 +111,7 @@ export class AuthController {
   })
   @Post('forgot-password')
   async forgotPassword(
+    @Headers('token') token: string,
     @Body() forgotPasswordDto: ForgotPasswordRequestDto,
   ): Promise<ForgotPasswordResponseDto> {
     return await this.authService.forgotPassword(forgotPasswordDto.email);
@@ -121,10 +122,15 @@ export class AuthController {
     status: HttpStatus.NO_CONTENT,
     description: 'The reset password',
   })
+  @ApiHeader({
+    name: 'token',
+    description: 'Token user',
+  })
   @ApiBody({ type: ResetTokenRequestDto })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('reset-password')
   async resetPassword(
+    @Headers('token') token: string,
     @Body() resetTokenRequestDto: ResetTokenRequestDto,
   ): Promise<void> {
     await this.authService.resetPassword(
@@ -137,19 +143,19 @@ export class AuthController {
   @ApiOperation({
     description: 'Get user',
   })
+  @ApiHeader({
+    name: 'token',
+    description: 'Token user',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns the token user',
     type: UserResponseDto,
   })
-  @ApiHeader({
-    name: 'authorization',
-    description: 'token user',
-  })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Get('user')
   getProfile(
-    @Headers('authorization') tokenUser: string,
+    @Headers('token') token: string,
     @Req() request,
   ): Promise<UserResponseDto> {
     return this.userService.getUser(request.userId);

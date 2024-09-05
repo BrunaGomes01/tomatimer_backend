@@ -11,6 +11,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.enableCors();
+  app.enableVersioning();
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
